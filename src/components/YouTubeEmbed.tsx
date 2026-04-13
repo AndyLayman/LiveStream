@@ -29,7 +29,7 @@ export default function YouTubeEmbed({ videoId }: YouTubeEmbedProps) {
       playerVars: {
         autoplay: 1,
         mute: 1,
-        controls: 1,
+        controls: 0,
         modestbranding: 1,
         rel: 0,
         showinfo: 0,
