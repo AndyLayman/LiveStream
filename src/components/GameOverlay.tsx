@@ -35,7 +35,7 @@ export default function GameOverlay({
         style={{
           display: "grid",
           gridTemplateColumns: `${CELL} ${CELL} ${CELL} 6em`,
-          gridTemplateRows: `2.3em ${CELL} ${CELL}`,
+          gridTemplateRows: `2.8em ${CELL} ${CELL}`,
         }}
       >
         {/* Bases diamond — row 1, col 4, triangle background */}
@@ -114,7 +114,7 @@ export default function GameOverlay({
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            gap: "0.1em",
+            gap: "0.05em",
             paddingLeft: "0.6em",
           }}
         >
@@ -291,24 +291,24 @@ function CountRow({
   color: string;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.3em" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "0.2em" }}>
       <span
         style={{
-          fontSize: "0.85em",
+          fontSize: "0.75em",
           fontWeight: 700,
           color: "var(--night-game)",
-          width: "1em",
+          width: "0.9em",
         }}
       >
         {label}
       </span>
-      <div style={{ display: "flex", gap: "0.3em" }}>
+      <div style={{ display: "flex", gap: "0.2em" }}>
         {Array.from({ length: total }, (_, i) => (
           <div
             key={i}
             style={{
-              width: "0.55em",
-              height: "0.55em",
+              width: "0.45em",
+              height: "0.45em",
               borderRadius: "50%",
               border: `2px solid ${i < filled ? color : "var(--night-game)"}`,
               background: i < filled ? color : "var(--chalk)",
