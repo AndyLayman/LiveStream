@@ -35,18 +35,30 @@ export default function GameOverlay({
           gridTemplateRows: `3.2em ${CELL} ${CELL}`,
         }}
       >
-        {/* Bases diamond — row 1, col 4 */}
+        {/* Bases diamond — row 1, col 4, triangle background */}
         <div
           style={{
             gridColumn: 4,
             gridRow: 1,
-            background: "var(--chalk)",
+            position: "relative",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <BaseDiamond bases={bases} />
+          {/* Triangle background shape */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "var(--chalk)",
+              clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)",
+            }}
+          />
+          {/* Diamond content (not clipped) */}
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <BaseDiamond bases={bases} />
+          </div>
         </div>
 
         {/* Away team cell */}
