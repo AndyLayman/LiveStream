@@ -65,6 +65,7 @@ export default function GameOverlay({
             gridRow: 1,
             position: "relative",
             overflow: "visible",
+            zIndex: 2,
           }}
         >
           {/* Triangle background shape */}
