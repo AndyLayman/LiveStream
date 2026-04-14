@@ -68,14 +68,14 @@ export default function GameOverlay({
             zIndex: 2,
           }}
         >
-          {/* Home-plate background shape — triangle top + rectangle bottom */}
+          {/* Triangle + extension to prevent gap at bottom */}
           <div
             style={{
               position: "absolute",
               inset: 0,
-              bottom: "-0.2em",
+              bottom: "-0.15em",
               background: "var(--chalk)",
-              clipPath: "polygon(50% 0%, 0% 70%, 0% 100%, 100% 100%, 100% 70%)",
+              clipPath: "polygon(50% 0%, 0% calc(100% - 0.15em), 0% 100%, 100% 100%, 100% calc(100% - 0.15em))",
             }}
           />
           {/* Diamond content — positioned at bottom center, allowed to overflow */}
@@ -160,7 +160,15 @@ export default function GameOverlay({
       </div>
 
       {/* Batter bar */}
-      {batter && (() => {
+      <div
+        style={{
+          display: "grid",
+          gridTemplateRows: batter ? "1fr" : "0fr",
+          transition: "grid-template-rows var(--duration-base) var(--ease-in-out)",
+        }}
+      >
+        <div style={{ overflow: "hidden" }}>
+        {(() => {
         const abBg = battingBg;
         const abColor = battingFg;
         return (
@@ -203,13 +211,15 @@ export default function GameOverlay({
                 letterSpacing: "0.02em",
               }}
             >
-              {batter.number != null && `#${batter.number} `}
-              {batter.firstName} {batter.lastName}
+              {batter?.number != null && `#${batter.number} `}
+              {batter?.firstName} {batter?.lastName}
             </span>
           </div>
         </div>
         );
       })()}
+        </div>
+      </div>
     </div>
   );
 }
