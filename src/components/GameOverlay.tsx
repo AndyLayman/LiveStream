@@ -34,14 +34,14 @@ export default function GameOverlay({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `${CELL} ${CELL} ${CELL} 6em`,
-          gridTemplateRows: `3em ${CELL} ${CELL}`,
+          gridTemplateColumns: `${CELL} ${CELL} 0.15em ${CELL} 0.15em 6em`,
+          gridTemplateRows: `3em ${CELL} 0.15em ${CELL}`,
         }}
       >
         {/* Bases diamond — row 1, col 4, triangle background */}
         <div
           style={{
-            gridColumn: 4,
+            gridColumn: 6,
             gridRow: 1,
             position: "relative",
             display: "flex",
@@ -70,11 +70,11 @@ export default function GameOverlay({
         {/* Away score cell */}
         <ScoreCell row={2} score={away.score} />
 
-        {/* Inning — rows 2–3, col 3 */}
+        {/* Inning — rows 2–4, col 4 */}
         <div
           style={{
-            gridColumn: 3,
-            gridRow: "2 / 4",
+            gridColumn: 4,
+            gridRow: "2 / 5",
             background: "var(--chalk)",
             display: "flex",
             flexDirection: "column",
@@ -105,11 +105,11 @@ export default function GameOverlay({
           )}
         </div>
 
-        {/* Count (O/S/B) — rows 2–3, col 4 */}
+        {/* Count (O/S/B) — rows 2–4, col 6 */}
         <div
           style={{
-            gridColumn: 4,
-            gridRow: "2 / 4",
+            gridColumn: 6,
+            gridRow: "2 / 5",
             background: "var(--chalk)",
             display: "flex",
             flexDirection: "column",
@@ -125,9 +125,9 @@ export default function GameOverlay({
         </div>
 
         {/* Home team cell */}
-        <TeamCell row={3} abbreviation={home.abbreviation} isUs={home.isUs} />
+        <TeamCell row={4} abbreviation={home.abbreviation} isUs={home.isUs} />
         {/* Home score cell */}
-        <ScoreCell row={3} score={home.score} />
+        <ScoreCell row={4} score={home.score} />
       </div>
 
       {/* Batter bar */}
