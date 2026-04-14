@@ -25,6 +25,9 @@ interface Game {
   num_innings: number | null;
   status: string;
   location: string;
+  opponent_logo_svg: string | null;
+  opponent_color_fg: string | null;
+  opponent_color_bg: string | null;
 }
 
 interface Player {

@@ -54,6 +54,11 @@ export default function Home() {
   const outs = gameState?.outs ?? 0;
   const isUsHome = game?.location === "home";
 
+  // Team colors/logos from DB
+  const opponentColorBg = game?.opponent_color_bg ?? null;
+  const opponentColorFg = game?.opponent_color_fg ?? null;
+  const opponentLogoSvg = game?.opponent_logo_svg ?? null;
+
   // Bases — check both our runners and opponent runners based on who's batting
   const hasRunnerFirst = isTopInning
     ? gameState?.opponent_runner_first != null
@@ -104,11 +109,17 @@ export default function Home() {
                 abbreviation: awayTeamName.slice(0, 2).toUpperCase(),
                 score: awayScore,
                 isUs: !isUsHome,
+                colorBg: !isUsHome ? null : opponentColorBg,
+                colorFg: !isUsHome ? null : opponentColorFg,
+                logoSvg: !isUsHome ? null : opponentLogoSvg,
               }}
               home={{
                 abbreviation: homeTeamName.slice(0, 2).toUpperCase(),
                 score: homeScore,
                 isUs: isUsHome,
+                colorBg: isUsHome ? null : opponentColorBg,
+                colorFg: isUsHome ? null : opponentColorFg,
+                logoSvg: isUsHome ? null : opponentLogoSvg,
               }}
               inning={inning}
               isTopInning={isTopInning}
