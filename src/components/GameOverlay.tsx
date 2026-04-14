@@ -32,6 +32,13 @@ const US_FG = "#FFC425";
 const DEFAULT_BG = "#111111";
 const DEFAULT_FG = "#F7F7F7";
 
+function getTeamColors(team: TeamInfo) {
+  return {
+    bg: team.colorBg || (team.isUs ? US_BG : DEFAULT_BG),
+    fg: team.colorFg || (team.isUs ? US_FG : DEFAULT_FG),
+  };
+}
+
 export default function GameOverlay({
   away,
   home,
@@ -44,86 +51,42 @@ export default function GameOverlay({
   batter,
 }: GameOverlayProps) {
   const battingTeam = isTopInning ? away : home;
-  const battingBg = battingTeam.colorBg || (battingTeam.isUs ? US_BG : DEFAULT_BG);
-  const battingFg = battingTeam.colorFg || (battingTeam.isUs ? US_FG : DEFAULT_FG);
+  const fieldingTeam = isTopInning ? home : away;
+  const battingColors = getTeamColors(battingTeam);
+  const fieldingColors = getTeamColors(fieldingTeam);
 
   return (
-    <div style={{ display: "inline-flex", flexDirection: "column", position: "relative" }}>
-      {/* 3D Bases diamond — upper-right of scoreboard */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "100%",
-          right: "0",
-          marginBottom: "-0.3em",
-          zIndex: 2,
-        }}
-      >
-        <BaseDiamond bases={bases} activeColor={battingBg} activeBorder={battingFg} />
-      </div>
-
+    <div style={{ display: "inline-flex", flexDirection: "column-reverse" }}>
       {/* Main scoreboard grid */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `${CELL} ${CELL} 0.15em ${CELL} 0.15em 6em`,
+          gridTemplateColumns: `${CELL} 0.15em ${CELL} 0.15em 5em 0.15em 5em`,
           gridTemplateRows: `${CELL} 0.15em ${CELL}`,
         }}
       >
         {/* Away team cell */}
-        <TeamCell row={1} team={away} />
+        <TeamCell
+          row={1}
+          team={away}
+          isFielding={!isTopInning}
+          fieldingColors={fieldingColors}
+        />
         {/* Away score cell */}
         <ScoreCell row={1} score={away.score} />
 
-        {/* Inning — rows 1–3, col 4 */}
+        {/* Count (O/S/B) — rows 1–3, col 5 */}
         <div
           style={{
-            gridColumn: 4,
+            gridColumn: 5,
             gridRow: "1 / 4",
             background: "var(--chalk)",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
             justifyContent: "center",
-            gap: "0.4em",
-          }}
-        >
-          <NavArrowUpSolid
-            width="0.9em"
-            height="0.9em"
-            color={isTopInning ? "var(--night-game)" : "var(--chalk)"}
-            style={isTopInning ? undefined : { stroke: "var(--night-game)", strokeWidth: 1 }}
-          />
-          <span
-            style={{
-              fontSize: "1.2em",
-              fontWeight: 700,
-              color: "var(--night-game)",
-              lineHeight: 1,
-            }}
-          >
-            {inning}
-          </span>
-          <NavArrowDownSolid
-            width="0.9em"
-            height="0.9em"
-            color={!isTopInning ? "var(--night-game)" : "var(--chalk)"}
-            style={!isTopInning ? undefined : { stroke: "var(--night-game)", strokeWidth: 1 }}
-          />
-        </div>
-
-        {/* Count (O/S/B) — rows 1–3, col 6 */}
-        <div
-          style={{
-            gridColumn: 6,
-            gridRow: "1 / 4",
-            background: "var(--chalk)",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-end",
             gap: "0.05em",
-            paddingLeft: "0.6em",
-            paddingBottom: "0.3em",
+            paddingLeft: "0.5em",
+            paddingRight: "0.3em",
           }}
         >
           <CountRow label="O" filled={outs} total={2} color="var(--night-game)" />
@@ -131,8 +94,61 @@ export default function GameOverlay({
           <CountRow label="B" filled={balls} total={3} color="var(--outfield)" />
         </div>
 
+        {/* Bases + Inning — rows 1–3, col 7 */}
+        <div
+          style={{
+            gridColumn: 7,
+            gridRow: "1 / 4",
+            background: "var(--chalk)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.15em",
+            position: "relative",
+          }}
+        >
+          <BaseDiamond bases={bases} activeColor={battingColors.bg} activeBorder={battingColors.fg} />
+          {/* Inning */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3em",
+            }}
+          >
+            <NavArrowUpSolid
+              width="0.7em"
+              height="0.7em"
+              color={isTopInning ? "var(--night-game)" : "var(--chalk)"}
+              style={isTopInning ? undefined : { stroke: "var(--night-game)", strokeWidth: 1 }}
+            />
+            <span
+              style={{
+                fontSize: "1em",
+                fontWeight: 700,
+                color: "var(--night-game)",
+                lineHeight: 1,
+              }}
+            >
+              {inning}
+            </span>
+            <NavArrowDownSolid
+              width="0.7em"
+              height="0.7em"
+              color={!isTopInning ? "var(--night-game)" : "var(--chalk)"}
+              style={!isTopInning ? undefined : { stroke: "var(--night-game)", strokeWidth: 1 }}
+            />
+          </div>
+        </div>
+
         {/* Home team cell */}
-        <TeamCell row={3} team={home} />
+        <TeamCell
+          row={3}
+          team={home}
+          isFielding={isTopInning}
+          fieldingColors={fieldingColors}
+        />
         {/* Home score cell */}
         <ScoreCell row={3} score={home.score} />
       </div>
@@ -146,56 +162,50 @@ export default function GameOverlay({
         }}
       >
         <div style={{ overflow: "hidden" }}>
-        {(() => {
-        const abBg = battingBg;
-        const abColor = battingFg;
-        return (
-        <div style={{ display: "flex", alignItems: "stretch", marginTop: "0.1em" }}>
-          <div
-            style={{
-              width: CELL,
-              padding: "0.35em 0",
-              background: abBg,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <span
+          <div style={{ display: "flex", alignItems: "stretch", marginBottom: "0.1em" }}>
+            <div
               style={{
-                fontSize: "0.7em",
-                fontWeight: 600,
-                color: abColor,
-                letterSpacing: "0.04em",
+                width: CELL,
+                padding: "0.35em 0",
+                background: battingColors.bg,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              AB
-            </span>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              background: "var(--chalk)",
-              display: "flex",
-              alignItems: "center",
-              padding: "0.35em 0.6em",
-            }}
-          >
-            <span
+              <span
+                style={{
+                  fontSize: "0.7em",
+                  fontWeight: 600,
+                  color: battingColors.fg,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                AB
+              </span>
+            </div>
+            <div
               style={{
-                fontSize: "0.8em",
-                fontWeight: 400,
-                color: "var(--night-game)",
-                letterSpacing: "0.02em",
+                flex: 1,
+                background: "var(--chalk)",
+                display: "flex",
+                alignItems: "center",
+                padding: "0.35em 0.6em",
               }}
             >
-              {batter?.number != null && `#${batter.number} `}
-              {batter?.firstName} {batter?.lastName}
-            </span>
+              <span
+                style={{
+                  fontSize: "0.8em",
+                  fontWeight: 400,
+                  color: "var(--night-game)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {batter?.number != null && `#${batter.number} `}
+                {batter?.firstName} {batter?.lastName}
+              </span>
+            </div>
           </div>
-        </div>
-        );
-      })()}
         </div>
       </div>
     </div>
@@ -207,12 +217,15 @@ export default function GameOverlay({
 function TeamCell({
   row,
   team,
+  isFielding,
+  fieldingColors,
 }: {
   row: number;
   team: TeamInfo;
+  isFielding: boolean;
+  fieldingColors: { bg: string; fg: string };
 }) {
-  const bg = team.colorBg || (team.isUs ? US_BG : DEFAULT_BG);
-  const fg = team.colorFg || (team.isUs ? US_FG : DEFAULT_FG);
+  const { bg, fg } = getTeamColors(team);
   const hasLogo = !!team.logoSvg;
 
   return (
@@ -224,6 +237,7 @@ function TeamCell({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        position: "relative",
       }}
     >
       {hasLogo ? (
@@ -245,6 +259,19 @@ function TeamCell({
           {team.abbreviation.slice(0, 2).toUpperCase()}
         </span>
       )}
+      {/* Baseball icon — indicates fielding team */}
+      {isFielding && (
+        <div
+          style={{
+            position: "absolute",
+            top: "-0.15em",
+            right: "-0.15em",
+            zIndex: 3,
+          }}
+        >
+          <BaseballIcon size="0.55em" />
+        </div>
+      )}
     </div>
   );
 }
@@ -253,7 +280,7 @@ function ScoreCell({ row, score }: { row: number; score: number }) {
   return (
     <div
       style={{
-        gridColumn: 2,
+        gridColumn: 3,
         gridRow: row,
         background: "var(--chalk)",
         display: "flex",
@@ -276,50 +303,95 @@ function ScoreCell({ row, score }: { row: number; score: number }) {
 }
 
 function BaseDiamond({
-  bases,
   activeColor,
   activeBorder,
+  bases,
 }: {
-  bases: { first: boolean; second: boolean; third: boolean };
   activeColor: string;
   activeBorder: string;
+  bases: { first: boolean; second: boolean; third: boolean };
 }) {
+  const S = 1.1; // base size in em
+  const GAP = 0.15; // gap between bases in em
+  const HALF = S / 2;
+  const CENTER = S + GAP / 2; // center point
+  const LINE_W = 0.12; // baseline thickness
+
   return (
     <div
       style={{
-        perspective: "12em",
-        perspectiveOrigin: "50% 20%",
+        position: "relative",
+        width: `${S * 2 + GAP}em`,
+        height: `${S * 2 + GAP}em`,
       }}
     >
+      {/* Baselines — diagonal lines connecting bases */}
+      {/* 2nd to 3rd */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1.6em 1.6em",
-          gridTemplateRows: "1.6em 1.6em",
-          gap: "0.2em",
-          transform: "rotateX(55deg) rotate(45deg)",
-          transformStyle: "preserve-3d",
+          position: "absolute",
+          top: `${HALF}em`,
+          left: `${HALF}em`,
+          width: `${Math.sqrt(2) * (S + GAP)}em`,
+          height: `${LINE_W}em`,
+          background: "var(--night-game)",
+          transformOrigin: "0 50%",
+          transform: "rotate(45deg)",
         }}
-      >
-        {/* Second base — top left in rotated grid */}
-        <Diamond active={bases.second} activeColor={activeColor} activeBorder={activeBorder} style={{ gridColumn: 1, gridRow: 1 }} />
-        {/* Third base — bottom left */}
-        <Diamond active={bases.third} activeColor={activeColor} activeBorder={activeBorder} style={{ gridColumn: 1, gridRow: 2 }} />
-        {/* First base — top right */}
-        <Diamond active={bases.first} activeColor={activeColor} activeBorder={activeBorder} style={{ gridColumn: 2, gridRow: 1 }} />
-        {/* Home plate marker — bottom right */}
-        <div
-          style={{
-            gridColumn: 2,
-            gridRow: 2,
-            width: "1.6em",
-            height: "1.6em",
-            background: "var(--chalk)",
-            border: "0.12em solid var(--night-game)",
-            opacity: 0.3,
-          }}
-        />
-      </div>
+      />
+      {/* 2nd to 1st */}
+      <div
+        style={{
+          position: "absolute",
+          top: `${HALF}em`,
+          right: `${HALF}em`,
+          width: `${Math.sqrt(2) * (S + GAP)}em`,
+          height: `${LINE_W}em`,
+          background: "var(--night-game)",
+          transformOrigin: "100% 50%",
+          transform: "rotate(-45deg)",
+        }}
+      />
+
+      {/* Second base — top center */}
+      <Diamond
+        active={bases.second}
+        activeColor={activeColor}
+        activeBorder={activeBorder}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "50%",
+          transform: "translateX(-50%) rotate(45deg)",
+        }}
+        size={S}
+      />
+      {/* Third base — middle left */}
+      <Diamond
+        active={bases.third}
+        activeColor={activeColor}
+        activeBorder={activeBorder}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: 0,
+          transform: "translateY(-50%) rotate(45deg)",
+        }}
+        size={S}
+      />
+      {/* First base — middle right */}
+      <Diamond
+        active={bases.first}
+        activeColor={activeColor}
+        activeBorder={activeBorder}
+        style={{
+          position: "absolute",
+          top: "50%",
+          right: 0,
+          transform: "translateY(-50%) rotate(45deg)",
+        }}
+        size={S}
+      />
     </div>
   );
 }
@@ -329,18 +401,20 @@ function Diamond({
   activeColor,
   activeBorder,
   style,
+  size = 1.1,
 }: {
   active: boolean;
   activeColor: string;
   activeBorder: string;
   style?: React.CSSProperties;
+  size?: number;
 }) {
   return (
     <div
       style={{
-        width: "1.6em",
-        height: "1.6em",
-        border: `0.12em solid ${active ? activeBorder : "var(--night-game)"}`,
+        width: `${size}em`,
+        height: `${size}em`,
+        border: `0.1em solid ${active ? activeBorder : "var(--night-game)"}`,
         background: active ? activeColor : "var(--chalk)",
         transition: "all var(--duration-fast) var(--ease-in-out)",
         ...style,
@@ -388,6 +462,26 @@ function CountRow({
         ))}
       </div>
     </div>
+  );
+}
+
+function BaseballIcon({ size = "0.5em" }: { size?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="12" cy="12" r="11" fill="var(--chalk)" stroke="var(--stitch-red)" strokeWidth="2" />
+      <path
+        d="M8.5 2.5C8.5 5.5 7 8 5 10M15.5 21.5C15.5 18.5 17 16 19 14"
+        stroke="var(--stitch-red)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
 
