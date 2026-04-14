@@ -56,7 +56,7 @@ export default function GameOverlay({
   const fieldingColors = getTeamColors(fieldingTeam);
 
   return (
-    <div style={{ display: "inline-flex", flexDirection: "column" }}>
+    <div style={{ display: "inline-flex", flexDirection: "column-reverse" }}>
       {/* Main scoreboard grid */}
       <div
         style={{
@@ -162,7 +162,7 @@ export default function GameOverlay({
         }}
       >
         <div style={{ overflow: "hidden" }}>
-          <div style={{ display: "flex", alignItems: "stretch", marginTop: "0.1em" }}>
+          <div style={{ display: "flex", alignItems: "stretch", marginBottom: "0.1em" }}>
             <div
               style={{
                 width: CELL,
