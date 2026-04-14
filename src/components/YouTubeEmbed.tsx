@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
+import { SoundHigh, SoundOff } from "iconoir-react/regular";
 
 interface YouTubeEmbedProps {
   videoId: string;
@@ -110,30 +111,11 @@ export default function YouTubeEmbed({ videoId }: YouTubeEmbedProps) {
         onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
         title={muted ? "Unmute" : "Mute"}
       >
-        <svg
-          width="1.2em"
-          height="1.2em"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {muted ? (
-            <>
-              <path d="M11 5L6 9H2v6h4l5 4V5z" />
-              <line x1="23" y1="9" x2="17" y2="15" />
-              <line x1="17" y1="9" x2="23" y2="15" />
-            </>
-          ) : (
-            <>
-              <path d="M11 5L6 9H2v6h4l5 4V5z" />
-              <path d="M19.07 4.93a10 10 0 010 14.14" />
-              <path d="M15.54 8.46a5 5 0 010 7.07" />
-            </>
-          )}
-        </svg>
+        {muted ? (
+          <SoundOff width="1.2em" height="1.2em" />
+        ) : (
+          <SoundHigh width="1.2em" height="1.2em" />
+        )}
       </button>
     </div>
   );

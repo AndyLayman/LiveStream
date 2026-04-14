@@ -1,5 +1,8 @@
 "use client";
 
+import { NavArrowUp, NavArrowDown } from "iconoir-react/regular";
+import { NavArrowUp as NavArrowUpSolid, NavArrowDown as NavArrowDownSolid } from "iconoir-react/solid";
+
 interface GameOverlayProps {
   away: { abbreviation: string; score: number; isUs: boolean };
   home: { abbreviation: string; score: number; isUs: boolean };
@@ -79,17 +82,11 @@ export default function GameOverlay({
             gap: "0.08em",
           }}
         >
-          <span
-            style={{
-              fontSize: "0.75em",
-              lineHeight: 1,
-              color: "var(--night-game)",
-              opacity: isTopInning ? 1 : 0.18,
-              transition: "opacity var(--duration-fast) var(--ease-in-out)",
-            }}
-          >
-            &#9650;
-          </span>
+          {isTopInning ? (
+            <NavArrowUpSolid width="0.9em" height="0.9em" color="var(--night-game)" />
+          ) : (
+            <NavArrowUp width="0.9em" height="0.9em" color="var(--night-game)" style={{ opacity: 0.2 }} />
+          )}
           <span
             style={{
               fontSize: "1.2em",
@@ -100,17 +97,11 @@ export default function GameOverlay({
           >
             {inning}
           </span>
-          <span
-            style={{
-              fontSize: "0.75em",
-              lineHeight: 1,
-              color: "var(--night-game)",
-              opacity: !isTopInning ? 1 : 0.18,
-              transition: "opacity var(--duration-fast) var(--ease-in-out)",
-            }}
-          >
-            &#9661;
-          </span>
+          {!isTopInning ? (
+            <NavArrowDownSolid width="0.9em" height="0.9em" color="var(--night-game)" />
+          ) : (
+            <NavArrowDown width="0.9em" height="0.9em" color="var(--night-game)" style={{ opacity: 0.2 }} />
+          )}
         </div>
 
         {/* Count (O/S/B) — rows 2–3, col 4 */}
