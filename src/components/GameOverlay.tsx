@@ -49,13 +49,12 @@ export default function GameOverlay({
 
   return (
     <div style={{ display: "inline-flex", flexDirection: "column", position: "relative" }}>
-      {/* 3D Bases diamond — hangs off the top */}
+      {/* 3D Bases diamond — upper-right of scoreboard */}
       <div
         style={{
           position: "absolute",
           bottom: "100%",
-          left: "50%",
-          transform: "translateX(-50%)",
+          right: "0",
           marginBottom: "-0.3em",
           zIndex: 2,
         }}
