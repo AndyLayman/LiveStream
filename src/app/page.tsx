@@ -84,12 +84,12 @@ export default function Home() {
         {videoId ? (
           <YouTubeEmbed videoId={videoId} />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black text-gray-400">
-            <svg className="w-20 h-20 mb-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "var(--bg)", color: "var(--text-muted)" }}>
+            <svg style={{ width: "5em", height: "5em", color: "var(--text-dim)", marginBottom: "1em" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
-            <p className="text-lg font-medium">No stream loaded</p>
-            <p className="text-sm text-gray-500 mt-1">
+            <p style={{ fontSize: "1.1em", fontWeight: 400, color: "var(--text)" }}>No stream loaded</p>
+            <p style={{ fontSize: "0.85em", color: "var(--text-dim)", marginTop: "0.3em" }}>
               {loading ? "Looking for active game..." : "Press the URL button to enter a YouTube live stream"}
             </p>
           </div>
@@ -118,15 +118,19 @@ export default function Home() {
             </div>
             {currentBatter && (
               <div
-                className="bg-gray-900/90 backdrop-blur-sm border border-gray-700 shadow-2xl"
-                style={{ borderRadius: "0.5em", padding: "0.3em 0.8em" }}
+                style={{
+                  background: "var(--bg-card)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "0.5em",
+                  padding: "0.3em 0.8em",
+                }}
               >
-                <span className="text-gray-400" style={{ fontSize: "0.65em" }}>AB </span>
-                <span className="text-white font-bold" style={{ fontSize: "0.85em" }}>
+                <span style={{ fontSize: "0.65em", color: "var(--text-muted)" }}>AB </span>
+                <span style={{ fontSize: "0.85em", fontWeight: 600, color: "var(--text)" }}>
                   {currentBatter.first_name} {currentBatter.last_name}
                 </span>
                 {currentBatter.number && (
-                  <span className="text-gray-500" style={{ fontSize: "0.65em" }}> #{currentBatter.number}</span>
+                  <span style={{ fontSize: "0.65em", color: "var(--text-dim)" }}> #{currentBatter.number}</span>
                 )}
               </div>
             )}
@@ -156,8 +160,25 @@ export default function Home() {
         {/* URL toggle button */}
         <button
           onClick={() => setShowUrlBar(!showUrlBar)}
-          className="absolute z-50 bg-gray-800/80 hover:bg-gray-700 text-white rounded-full flex items-center justify-center font-bold backdrop-blur-sm border border-gray-600 transition-colors"
-          style={{ bottom: "1em", right: "1em", width: "2.5em", height: "2.5em", fontSize: "1.2cqw" }}
+          className="absolute z-50 flex items-center justify-center"
+          style={{
+            bottom: "1em",
+            right: "1em",
+            width: "2.5em",
+            height: "2.5em",
+            fontSize: "1.2cqw",
+            background: "var(--bg-card)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--r-full)",
+            color: "var(--text)",
+            fontWeight: 600,
+            cursor: "pointer",
+            transition: `transform var(--duration-fast) var(--ease-spring)`,
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+          onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
           title={showUrlBar ? "Hide URL bar" : "Load stream"}
         >
           {showUrlBar ? "X" : "TV"}
@@ -166,8 +187,13 @@ export default function Home() {
         {/* URL input bar */}
         {showUrlBar && (
           <div
-            className="absolute bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700 z-40"
-            style={{ padding: "1em", fontSize: "1.2cqw" }}
+            className="absolute bottom-0 left-0 right-0 z-40"
+            style={{
+              padding: "1em",
+              fontSize: "1.2cqw",
+              background: "var(--bg-deep)",
+              borderTop: "1px solid var(--border)",
+            }}
           >
             <div className="mx-auto flex" style={{ maxWidth: "40em", gap: "0.5em" }}>
               <input
@@ -176,13 +202,37 @@ export default function Home() {
                 onChange={(e) => setVideoInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleLoadVideo()}
                 placeholder="Paste YouTube URL or video ID..."
-                className="flex-1 bg-gray-800 border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                style={{ borderRadius: "0.5em", padding: "0.4em 0.8em", fontSize: "1em" }}
+                className="flex-1"
+                style={{
+                  background: "var(--bg-input)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--r-2)",
+                  padding: "0.4em 0.8em",
+                  fontSize: "1em",
+                  color: "var(--text)",
+                  outline: "none",
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontWeight: 300,
+                }}
               />
               <button
                 onClick={handleLoadVideo}
-                className="bg-red-600 hover:bg-red-700 text-white font-medium transition-colors"
-                style={{ borderRadius: "0.5em", padding: "0.4em 1em", fontSize: "1em" }}
+                style={{
+                  background: "var(--accent)",
+                  color: "var(--accent-on)",
+                  borderRadius: "var(--r-2)",
+                  padding: "0.4em 1em",
+                  fontSize: "1em",
+                  fontWeight: 500,
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: "'Montserrat', sans-serif",
+                  transition: `transform var(--duration-fast) var(--ease-spring)`,
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+                onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
               >
                 Load Stream
               </button>

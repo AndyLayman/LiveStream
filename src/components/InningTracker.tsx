@@ -13,24 +13,36 @@ export default function InningTracker({
 }: InningTrackerProps) {
   return (
     <div
-      className="bg-gray-900/90 backdrop-blur-sm border border-gray-700 shadow-2xl"
-      style={{ borderRadius: "0.5em", padding: "0.5em 1em" }}
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        borderRadius: "0.5em",
+        padding: "0.5em 1em",
+      }}
     >
-      <div className="flex items-center" style={{ gap: "0.8em" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.8em" }}>
         {/* Inning arrow */}
-        <div className="flex flex-col items-center" style={{ gap: "0.1em", marginRight: "0.2em" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.1em", marginRight: "0.2em" }}>
           <span
-            className={isTopInning ? "text-white" : "text-gray-600"}
-            style={{ fontSize: "0.55em", lineHeight: 1 }}
+            style={{
+              fontSize: "0.55em",
+              lineHeight: 1,
+              color: isTopInning ? "var(--text)" : "var(--text-dim)",
+              transition: `color var(--duration-fast) var(--ease-in-out)`,
+            }}
           >
             &#9650;
           </span>
-          <span className="font-bold text-white" style={{ fontSize: "1.2em", lineHeight: 1 }}>
+          <span style={{ fontSize: "1.2em", fontWeight: 700, color: "var(--text)", lineHeight: 1 }}>
             {currentInning}
           </span>
           <span
-            className={!isTopInning ? "text-white" : "text-gray-600"}
-            style={{ fontSize: "0.55em", lineHeight: 1 }}
+            style={{
+              fontSize: "0.55em",
+              lineHeight: 1,
+              color: !isTopInning ? "var(--text)" : "var(--text-dim)",
+              transition: `color var(--duration-fast) var(--ease-in-out)`,
+            }}
           >
             &#9660;
           </span>
@@ -42,14 +54,18 @@ export default function InningTracker({
             (inning) => (
               <div
                 key={inning}
-                className={`rounded-full ${
-                  inning < currentInning
-                    ? "bg-blue-500"
-                    : inning === currentInning
-                      ? "bg-white"
-                      : "bg-gray-600"
-                }`}
-                style={{ width: "0.5em", height: "0.5em" }}
+                style={{
+                  width: "0.5em",
+                  height: "0.5em",
+                  borderRadius: "var(--r-full)",
+                  background:
+                    inning < currentInning
+                      ? "var(--accent)"
+                      : inning === currentInning
+                        ? "var(--text)"
+                        : "var(--gray-600)",
+                  transition: `background var(--duration-fast) var(--ease-in-out)`,
+                }}
               />
             )
           )}

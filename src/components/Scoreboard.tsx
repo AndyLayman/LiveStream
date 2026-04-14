@@ -23,13 +23,28 @@ export default function Scoreboard({
 }: ScoreboardProps) {
   return (
     <div
-      className="bg-gray-900/90 backdrop-blur-sm border border-gray-700 overflow-hidden shadow-2xl"
-      style={{ borderRadius: "0.5em", minWidth: "22em" }}
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        borderRadius: "0.5em",
+        overflow: "hidden",
+        minWidth: "22em",
+      }}
     >
       {/* Header */}
       <div
-        className="flex items-center justify-between bg-gray-800/80 font-semibold text-gray-400 uppercase tracking-wider"
-        style={{ padding: "0.3em 0.8em", fontSize: "0.65em" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "var(--bg-deep)",
+          padding: "0.3em 0.8em",
+          fontSize: "0.65em",
+          fontWeight: 500,
+          color: "var(--text-muted)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+        }}
       >
         <span>Inning {inning}</span>
         <div style={{ display: "flex", gap: "1.2em" }}>
@@ -39,13 +54,8 @@ export default function Scoreboard({
         </div>
       </div>
 
-      {/* Away Team */}
       <TeamRow team={away} isAtBat={isTopInning} />
-
-      {/* Divider */}
-      <div className="bg-gray-700/50" style={{ height: "1px" }} />
-
-      {/* Home Team */}
+      <div style={{ height: "1px", background: "var(--border)" }} />
       <TeamRow team={home} isAtBat={!isTopInning} />
     </div>
   );
@@ -60,32 +70,38 @@ function TeamRow({
 }) {
   return (
     <div
-      className={`flex items-center justify-between transition-colors ${
-        isAtBat ? "bg-yellow-500/10" : ""
-      }`}
-      style={{ padding: "0.4em 0.8em" }}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0.4em 0.8em",
+        background: isAtBat ? "rgba(233, 215, 180, 0.08)" : "transparent",
+        transition: `background var(--duration-fast) var(--ease-in-out)`,
+      }}
     >
-      <div className="flex items-center" style={{ gap: "0.5em" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
         {isAtBat && (
-          <span className="text-yellow-400" style={{ fontSize: "0.6em" }}>&#9654;</span>
+          <span style={{ color: "var(--accent)", fontSize: "0.6em" }}>&#9654;</span>
         )}
         <span
-          className={`font-bold tracking-wide ${
-            isAtBat ? "text-white" : "text-gray-300"
-          }`}
-          style={{ fontSize: "0.85em" }}
+          style={{
+            fontWeight: 600,
+            fontSize: "0.85em",
+            letterSpacing: "0.03em",
+            color: isAtBat ? "var(--text)" : "var(--gray-200)",
+          }}
         >
           {team.abbreviation}
         </span>
       </div>
       <div style={{ display: "flex", gap: "1.2em" }}>
-        <span className="font-mono font-bold text-white" style={{ width: "2em", textAlign: "center", fontSize: "1.1em" }}>
+        <span style={{ width: "2em", textAlign: "center", fontSize: "1.1em", fontWeight: 700, color: "var(--text)" }}>
           {team.runs}
         </span>
-        <span className="font-mono text-gray-300" style={{ width: "2em", textAlign: "center", fontSize: "1.1em" }}>
+        <span style={{ width: "2em", textAlign: "center", fontSize: "1.1em", fontWeight: 400, color: "var(--gray-200)" }}>
           {team.hits}
         </span>
-        <span className="font-mono text-gray-400" style={{ width: "2em", textAlign: "center", fontSize: "1.1em" }}>
+        <span style={{ width: "2em", textAlign: "center", fontSize: "1.1em", fontWeight: 400, color: "var(--text-muted)" }}>
           {team.errors}
         </span>
       </div>

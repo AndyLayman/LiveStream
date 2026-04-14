@@ -16,15 +16,32 @@ interface ReactionButtonsProps {
 export default function ReactionButtons({ onReact }: ReactionButtonsProps) {
   return (
     <div
-      className="flex bg-gray-900/80 backdrop-blur-sm border border-gray-700 shadow-2xl"
-      style={{ borderRadius: "2em", padding: "0.3em 0.5em", gap: "0.2em" }}
+      style={{
+        display: "flex",
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        borderRadius: "2em",
+        padding: "0.3em 0.5em",
+        gap: "0.2em",
+      }}
     >
       {REACTIONS.map((r) => (
         <button
           key={r.type}
           onClick={() => onReact(r.type)}
-          className="hover:scale-125 active:scale-90 transition-transform"
-          style={{ fontSize: "1.5em", padding: "0.2em", lineHeight: 1 }}
+          style={{
+            fontSize: "1.5em",
+            padding: "0.2em",
+            lineHeight: 1,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            transition: `transform var(--duration-fast) var(--ease-spring)`,
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.25)")}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.9)")}
+          onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1.25)")}
           title={r.label}
         >
           {r.emoji}

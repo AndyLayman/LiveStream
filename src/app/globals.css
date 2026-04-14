@@ -1,19 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #000000;
-  --foreground: #ededed;
+  /* Baseball Palette */
+  --chalk: #F7F7F7;
+  --night-game: #111111;
+  --clay: #E9D7B4;
+  --dirt: #574F3D;
+  --stitch-red: #B93C3C;
+  --high-heat: #FA4D4D;
+  --outfield: #50684C;
+  --fresh-cut: #71A368;
+
+  /* Neutrals */
+  --black: #111111;
+  --gray-950: #181818;
+  --gray-900: #1E1E1E;
+  --gray-800: #2A2A2A;
+  --gray-700: #3A3A3A;
+  --gray-600: #5A5A5A;
+  --gray-400: #8A8A8A;
+  --gray-200: #B0B0B0;
+  --white: #F7F7F7;
+
+  /* Semantic */
+  --bg: var(--black);
+  --bg-deep: var(--gray-950);
+  --bg-card: var(--gray-900);
+  --bg-input: var(--gray-800);
+  --text: var(--white);
+  --text-muted: var(--gray-400);
+  --text-dim: var(--gray-600);
+  --border: var(--gray-700);
+  --hover: var(--gray-800);
+  --accent: var(--clay);
+  --accent-hover: #D4C29F;
+  --accent-on: var(--black);
+  --danger: var(--high-heat);
+  --success: var(--fresh-cut);
+
+  /* Radius */
+  --r-1: 4px;
+  --r-2: 8px;
+  --r-3: 16px;
+  --r-4: 24px;
+  --r-full: 9999px;
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 250ms;
+  --duration-slow: 500ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
 }
 
 * {
@@ -37,7 +88,7 @@ body {
 }
 
 .animate-float-up {
-  animation: float-up 3s ease-out forwards;
+  animation: float-up 3s var(--ease-out) forwards;
 }
 
 /* Celebration fade out */
@@ -48,7 +99,7 @@ body {
 }
 
 .animate-fade-out {
-  animation: fade-out 4s ease-out forwards;
+  animation: fade-out 4s var(--ease-out) forwards;
 }
 
 /* Confetti burst */
@@ -68,7 +119,7 @@ body {
 }
 
 .animate-confetti {
-  animation: confetti 2s ease-out forwards;
+  animation: confetti 2s var(--ease-out) forwards;
 }
 
 .celebration-burst {

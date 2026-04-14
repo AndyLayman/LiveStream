@@ -13,39 +13,29 @@ export default function BasesIndicator({
 }: BasesIndicatorProps) {
   const baseSize = "1.1em";
 
+  const baseStyle = (active: boolean): React.CSSProperties => ({
+    width: baseSize,
+    height: baseSize,
+    transform: "rotate(45deg)",
+    border: `2px solid ${active ? "var(--accent)" : "var(--gray-600)"}`,
+    background: active ? "var(--accent)" : "var(--gray-800)",
+    transition: `all var(--duration-fast) var(--ease-in-out)`,
+  });
+
   return (
     <div
-      className="bg-gray-900/90 backdrop-blur-sm border border-gray-700 shadow-2xl"
-      style={{ borderRadius: "0.5em", padding: "0.6em" }}
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        borderRadius: "0.5em",
+        padding: "0.6em",
+      }}
     >
-      <div className="flex flex-col items-center" style={{ gap: "0.15em" }}>
-        {/* Second base */}
-        <div
-          className={`rotate-45 border-2 ${
-            second
-              ? "bg-yellow-400 border-yellow-300"
-              : "bg-gray-700 border-gray-600"
-          }`}
-          style={{ width: baseSize, height: baseSize }}
-        />
-        {/* First and Third */}
-        <div className="flex" style={{ gap: "1em" }}>
-          <div
-            className={`rotate-45 border-2 ${
-              third
-                ? "bg-yellow-400 border-yellow-300"
-                : "bg-gray-700 border-gray-600"
-            }`}
-            style={{ width: baseSize, height: baseSize }}
-          />
-          <div
-            className={`rotate-45 border-2 ${
-              first
-                ? "bg-yellow-400 border-yellow-300"
-                : "bg-gray-700 border-gray-600"
-            }`}
-            style={{ width: baseSize, height: baseSize }}
-          />
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15em" }}>
+        <div style={baseStyle(second)} />
+        <div style={{ display: "flex", gap: "1em" }}>
+          <div style={baseStyle(third)} />
+          <div style={baseStyle(first)} />
         </div>
       </div>
     </div>
