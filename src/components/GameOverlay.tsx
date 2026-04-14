@@ -68,13 +68,14 @@ export default function GameOverlay({
             zIndex: 2,
           }}
         >
-          {/* Triangle background shape */}
+          {/* Home-plate background shape — triangle top + rectangle bottom */}
           <div
             style={{
               position: "absolute",
               inset: 0,
+              bottom: "-0.2em",
               background: "var(--chalk)",
-              clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)",
+              clipPath: "polygon(50% 0%, 0% 70%, 0% 100%, 100% 100%, 100% 70%)",
             }}
           />
           {/* Diamond content — positioned at bottom center, allowed to overflow */}
