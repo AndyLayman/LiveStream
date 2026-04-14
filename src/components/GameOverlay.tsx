@@ -12,6 +12,8 @@ interface GameOverlayProps {
   batter: { firstName: string; lastName: string; number?: string | number | null } | null;
 }
 
+const CELL = "2.5em";
+
 export default function GameOverlay({
   away,
   home,
@@ -23,221 +25,178 @@ export default function GameOverlay({
   bases,
   batter,
 }: GameOverlayProps) {
-  const baseSize = "0.95em";
-  const dotSize = "0.55em";
-
   return (
-    <div style={{ position: "relative", display: "inline-flex", flexDirection: "column" }}>
-      {/* Bases diamond — floats above the count section */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "100%",
-          right: "0",
-          background: "var(--bg-card)",
-          border: "1px solid var(--border)",
-          borderBottom: "none",
-          borderRadius: "0.2em 0.2em 0 0",
-          padding: "0.5em 1em 0.25em",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "0.12em",
-        }}
-      >
-        <div style={diamondStyle(bases.second, baseSize)} />
-        <div style={{ display: "flex", gap: "0.8em" }}>
-          <div style={diamondStyle(bases.third, baseSize)} />
-          <div style={diamondStyle(bases.first, baseSize)} />
-        </div>
-      </div>
-
-      {/* Main scoreboard row */}
-      <div
-        style={{
-          display: "flex",
-          border: "1px solid var(--border)",
-          borderRadius: "0.2em",
-          overflow: "hidden",
-          background: "var(--bg-card)",
-        }}
-      >
-        {/* Teams + Scores column */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          {/* Away row */}
-          <div style={{ display: "flex", flex: 1 }}>
-            <div
-              style={{
-                padding: "0.35em 0.5em",
-                background: away.isUs ? "var(--dirt)" : "var(--gray-700)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minWidth: "3em",
-              }}
-            >
-              <span
-                style={{
-                  fontWeight: 700,
-                  fontSize: "0.85em",
-                  color: away.isUs ? "var(--clay)" : "var(--text)",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                {away.abbreviation}
-              </span>
-            </div>
-            <div
-              style={{
-                padding: "0.25em 0.7em",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minWidth: "2.2em",
-              }}
-            >
-              <span style={{ fontSize: "1.3em", fontWeight: 700, color: "var(--text)", lineHeight: 1 }}>
-                {away.score}
-              </span>
-            </div>
+    <div style={{ display: "inline-flex", flexDirection: "column" }}>
+      {/* Scoreboard + Count/Bases */}
+      <div style={{ display: "flex", alignItems: "flex-end" }}>
+        {/* Left: Teams + Scores + Inning */}
+        <div style={{ display: "flex" }}>
+          {/* Teams + Scores */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <TeamRow
+              abbreviation={away.abbreviation}
+              score={away.score}
+              isUs={away.isUs}
+            />
+            <TeamRow
+              abbreviation={home.abbreviation}
+              score={home.score}
+              isUs={home.isUs}
+            />
           </div>
 
-          {/* Divider */}
-          <div style={{ height: "1px", background: "var(--border)" }} />
-
-          {/* Home row */}
-          <div style={{ display: "flex", flex: 1 }}>
-            <div
+          {/* Inning */}
+          <div
+            style={{
+              width: CELL,
+              background: "var(--chalk)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "0.1em",
+            }}
+          >
+            <span
               style={{
-                padding: "0.35em 0.5em",
-                background: home.isUs ? "var(--dirt)" : "var(--gray-700)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minWidth: "3em",
+                fontSize: "0.7em",
+                lineHeight: 1,
+                color: "var(--night-game)",
+                opacity: isTopInning ? 1 : 0.2,
+                transition: "opacity var(--duration-fast) var(--ease-in-out)",
               }}
             >
-              <span
-                style={{
-                  fontWeight: 700,
-                  fontSize: "0.85em",
-                  color: home.isUs ? "var(--clay)" : "var(--text)",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                {home.abbreviation}
-              </span>
-            </div>
-            <div
+              &#9650;
+            </span>
+            <span
               style={{
-                padding: "0.25em 0.7em",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minWidth: "2.2em",
+                fontSize: "1.15em",
+                fontWeight: 700,
+                color: "var(--night-game)",
+                lineHeight: 1,
               }}
             >
-              <span style={{ fontSize: "1.3em", fontWeight: 700, color: "var(--text)", lineHeight: 1 }}>
-                {home.score}
-              </span>
-            </div>
+              {inning}
+            </span>
+            <span
+              style={{
+                fontSize: "0.7em",
+                lineHeight: 1,
+                color: "var(--night-game)",
+                opacity: !isTopInning ? 1 : 0.2,
+                transition: "opacity var(--duration-fast) var(--ease-in-out)",
+              }}
+            >
+              &#9661;
+            </span>
           </div>
         </div>
 
-        {/* Inning indicator */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "0.08em",
-            padding: "0 0.55em",
-            borderLeft: "1px solid var(--border)",
-          }}
-        >
-          <span
+        {/* Right: Bases + Count with pentagon background */}
+        <div style={{ position: "relative", width: "6.5em", height: "8em" }}>
+          {/* Pentagon background shape */}
+          <div
             style={{
-              fontSize: "0.5em",
-              lineHeight: 1,
-              color: isTopInning ? "var(--text)" : "var(--text-dim)",
-              transition: "color var(--duration-fast) var(--ease-in-out)",
+              position: "absolute",
+              inset: 0,
+              background: "var(--chalk)",
+              clipPath:
+                "polygon(0% 40%, 8% 40%, 50% 2%, 92% 40%, 100% 40%, 100% 100%, 0% 100%)",
             }}
-          >
-            &#9650;
-          </span>
-          <span style={{ fontSize: "1.15em", fontWeight: 700, color: "var(--text)", lineHeight: 1 }}>
-            {inning}
-          </span>
-          <span
-            style={{
-              fontSize: "0.5em",
-              lineHeight: 1,
-              color: !isTopInning ? "var(--text)" : "var(--text-dim)",
-              transition: "color var(--duration-fast) var(--ease-in-out)",
-            }}
-          >
-            &#9660;
-          </span>
-        </div>
+          />
 
-        {/* Count (O / S / B) */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            gap: "0.2em",
-            padding: "0.4em 0.7em",
-            borderLeft: "1px solid var(--border)",
-          }}
-        >
-          <CountRow label="O" filled={outs} total={3} color="var(--text)" dotSize={dotSize} />
-          <CountRow label="S" filled={strikes} total={3} color="var(--stitch-red)" dotSize={dotSize} />
-          <CountRow label="B" filled={balls} total={4} color="var(--fresh-cut)" dotSize={dotSize} />
+          {/* Content */}
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingTop: "0.6em",
+              paddingBottom: "0.3em",
+            }}
+          >
+            {/* Bases diamond */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "0.1em",
+              }}
+            >
+              <Diamond active={bases.second} />
+              <div style={{ display: "flex", gap: "0.7em" }}>
+                <Diamond active={bases.third} />
+                <Diamond active={bases.first} />
+              </div>
+            </div>
+
+            {/* Count dots */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.15em",
+                alignSelf: "flex-start",
+                paddingLeft: "0.5em",
+              }}
+            >
+              <CountRow label="O" filled={outs} total={2} color="var(--night-game)" />
+              <CountRow label="S" filled={strikes} total={2} color="var(--stitch-red)" />
+              <CountRow label="B" filled={balls} total={3} color="var(--outfield)" />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Batter bar */}
       {batter && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "stretch",
-            marginTop: "0.15em",
-            border: "1px solid var(--border)",
-            borderRadius: "0.2em",
-            overflow: "hidden",
-            background: "var(--bg-card)",
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "stretch", marginTop: "0.1em" }}>
           <div
             style={{
-              padding: "0.25em 0.55em",
-              background: "var(--gray-700)",
-              fontSize: "0.6em",
-              fontWeight: 600,
-              color: "var(--text-muted)",
+              width: CELL,
+              background: "var(--dirt)",
               display: "flex",
               alignItems: "center",
+              justifyContent: "center",
+              padding: "0.3em 0",
             }}
           >
-            AB
+            <span
+              style={{
+                fontSize: "0.65em",
+                fontWeight: 500,
+                color: "var(--chalk)",
+                letterSpacing: "0.05em",
+              }}
+            >
+              AB
+            </span>
           </div>
           <div
             style={{
-              padding: "0.25em 0.6em",
-              fontSize: "0.8em",
-              fontWeight: 500,
-              color: "var(--text)",
+              flex: 1,
+              background: "var(--chalk)",
               display: "flex",
               alignItems: "center",
+              padding: "0.3em 0.6em",
             }}
           >
-            {batter.number != null && (
-              <span style={{ color: "var(--text-muted)", marginRight: "0.3em" }}>#{batter.number}</span>
-            )}
-            {batter.firstName} {batter.lastName}
+            <span
+              style={{
+                fontSize: "0.8em",
+                fontWeight: 400,
+                color: "var(--night-game)",
+                letterSpacing: "0.03em",
+              }}
+            >
+              {batter.number != null && `#${batter.number} `}
+              {batter.firstName} {batter.lastName}
+            </span>
           </div>
         </div>
       )}
@@ -245,15 +204,78 @@ export default function GameOverlay({
   );
 }
 
-function diamondStyle(active: boolean, size: string): React.CSSProperties {
-  return {
-    width: size,
-    height: size,
-    transform: "rotate(45deg)",
-    border: `2px solid ${active ? "var(--accent)" : "var(--text-dim)"}`,
-    background: active ? "var(--accent)" : "transparent",
-    transition: "all var(--duration-fast) var(--ease-in-out)",
-  };
+function TeamRow({
+  abbreviation,
+  score,
+  isUs,
+}: {
+  abbreviation: string;
+  score: number;
+  isUs: boolean;
+}) {
+  return (
+    <div style={{ display: "flex" }}>
+      {/* Team cell */}
+      <div
+        style={{
+          width: CELL,
+          height: CELL,
+          background: isUs ? "var(--dirt)" : "var(--night-game)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            fontWeight: 700,
+            fontSize: "0.9em",
+            color: isUs ? "var(--clay)" : "var(--chalk)",
+            letterSpacing: "0.05em",
+          }}
+        >
+          {abbreviation}
+        </span>
+      </div>
+      {/* Score cell */}
+      <div
+        style={{
+          width: CELL,
+          height: CELL,
+          background: "var(--chalk)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            fontSize: "1.5em",
+            fontWeight: 700,
+            color: "var(--night-game)",
+            lineHeight: 1,
+          }}
+        >
+          {score}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function Diamond({ active }: { active: boolean }) {
+  return (
+    <div
+      style={{
+        width: "1.2em",
+        height: "1.2em",
+        transform: "rotate(45deg)",
+        border: `0.15em solid ${active ? "var(--chalk)" : "var(--night-game)"}`,
+        background: active ? "var(--night-game)" : "var(--chalk)",
+        transition: "all var(--duration-fast) var(--ease-in-out)",
+      }}
+    />
+  );
 }
 
 function CountRow({
@@ -261,22 +283,20 @@ function CountRow({
   filled,
   total,
   color,
-  dotSize,
 }: {
   label: string;
   filled: number;
   total: number;
   color: string;
-  dotSize: string;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.3em" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "0.25em" }}>
       <span
         style={{
-          fontSize: "0.55em",
-          fontWeight: 600,
-          color: "var(--text-muted)",
-          width: "0.9em",
+          fontSize: "0.65em",
+          fontWeight: 700,
+          color: "var(--night-game)",
+          width: "1em",
         }}
       >
         {label}
@@ -286,11 +306,11 @@ function CountRow({
           <div
             key={i}
             style={{
-              width: dotSize,
-              height: dotSize,
+              width: "0.5em",
+              height: "0.5em",
               borderRadius: "50%",
-              border: `1.5px solid ${i < filled ? color : "var(--gray-500)"}`,
-              background: i < filled ? color : "transparent",
+              border: `1.5px solid ${i < filled ? color : "var(--night-game)"}`,
+              background: i < filled ? color : "var(--chalk)",
               transition: "all var(--duration-fast) var(--ease-in-out)",
             }}
           />
