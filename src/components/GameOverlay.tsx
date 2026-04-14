@@ -35,7 +35,7 @@ export default function GameOverlay({
         style={{
           display: "grid",
           gridTemplateColumns: `${CELL} ${CELL} ${CELL} 6em`,
-          gridTemplateRows: `2.8em ${CELL} ${CELL}`,
+          gridTemplateRows: `3em ${CELL} ${CELL}`,
         }}
       >
         {/* Bases diamond — row 1, col 4, triangle background */}
@@ -113,9 +113,10 @@ export default function GameOverlay({
             background: "var(--chalk)",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center",
+            justifyContent: "flex-end",
             gap: "0.05em",
             paddingLeft: "0.6em",
+            paddingBottom: "0.3em",
           }}
         >
           <CountRow label="O" filled={outs} total={2} color="var(--night-game)" />
