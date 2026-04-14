@@ -5,10 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useGameData } from "@/lib/useGameData";
 import { useReactions } from "@/lib/useReactions";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
-import Scoreboard from "@/components/Scoreboard";
-import CountIndicator from "@/components/CountIndicator";
-import InningTracker from "@/components/InningTracker";
-import BasesIndicator from "@/components/BasesIndicator";
+import GameOverlay from "@/components/GameOverlay";
 import ReactionsOverlay from "@/components/ReactionsOverlay";
 import ReactionButtons from "@/components/ReactionButtons";
 
@@ -55,7 +52,7 @@ export default function Home() {
   const inning = gameState?.current_inning ?? 1;
   const isTopInning = (gameState?.current_half ?? "top") === "top";
   const outs = gameState?.outs ?? 0;
-  const totalInnings = game?.num_innings ?? 6;
+  const isUsHome = game?.location === "home";
 
   // Bases — check both our runners and opponent runners based on who's batting
   const hasRunnerFirst = isTopInning
@@ -97,51 +94,41 @@ export default function Home() {
 
         {/* Layer 2: Baseball Overlay */}
         <div className="absolute inset-0 pointer-events-none" style={{ fontSize: "1.2cqw" }}>
-          {/* Top-left: Scoreboard + Count */}
+          {/* Top-left: Unified scoreboard */}
           <div
             className="absolute pointer-events-auto"
-            style={{ top: "1.5em", left: "1.5em", display: "flex", flexDirection: "column", gap: "0.4em" }}
+            style={{ top: "4em", left: "1.5em" }}
           >
-            <Scoreboard
-              away={{ name: awayTeamName, abbreviation: awayTeamName.slice(0, 4).toUpperCase(), runs: awayScore, hits: 0, errors: 0 }}
-              home={{ name: homeTeamName, abbreviation: homeTeamName.slice(0, 4).toUpperCase(), runs: homeScore, hits: 0, errors: 0 }}
+            <GameOverlay
+              away={{
+                abbreviation: awayTeamName.slice(0, 4).toUpperCase(),
+                score: awayScore,
+                isUs: !isUsHome,
+              }}
+              home={{
+                abbreviation: homeTeamName.slice(0, 4).toUpperCase(),
+                score: homeScore,
+                isUs: isUsHome,
+              }}
               inning={inning}
               isTopInning={isTopInning}
-            />
-            <div style={{ display: "flex", gap: "0.4em" }}>
-              <CountIndicator balls={balls} strikes={strikes} outs={outs} />
-              <BasesIndicator
-                first={hasRunnerFirst}
-                second={hasRunnerSecond}
-                third={hasRunnerThird}
-              />
-            </div>
-            {currentBatter && (
-              <div
-                style={{
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "0.5em",
-                  padding: "0.3em 0.8em",
-                }}
-              >
-                <span style={{ fontSize: "0.65em", color: "var(--text-muted)" }}>AB </span>
-                <span style={{ fontSize: "0.85em", fontWeight: 600, color: "var(--text)" }}>
-                  {currentBatter.first_name} {currentBatter.last_name}
-                </span>
-                {currentBatter.number && (
-                  <span style={{ fontSize: "0.65em", color: "var(--text-dim)" }}> #{currentBatter.number}</span>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Top-right: Inning tracker */}
-          <div className="absolute pointer-events-auto" style={{ top: "1.5em", right: "1.5em" }}>
-            <InningTracker
-              currentInning={inning}
-              isTopInning={isTopInning}
-              totalInnings={totalInnings}
+              balls={balls}
+              strikes={strikes}
+              outs={outs}
+              bases={{
+                first: hasRunnerFirst,
+                second: hasRunnerSecond,
+                third: hasRunnerThird,
+              }}
+              batter={
+                currentBatter
+                  ? {
+                      firstName: currentBatter.first_name,
+                      lastName: currentBatter.last_name,
+                      number: currentBatter.number,
+                    }
+                  : null
+              }
             />
           </div>
 
