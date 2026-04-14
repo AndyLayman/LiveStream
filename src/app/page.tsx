@@ -102,7 +102,7 @@ export default function Home() {
           {/* Bottom-left: Unified scoreboard */}
           <div
             className="absolute pointer-events-auto"
-            style={{ bottom: "4em", left: "1.5em" }}
+            style={{ bottom: "1.5em", left: "1.5em" }}
           >
             <GameOverlay
               away={{
