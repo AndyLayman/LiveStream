@@ -132,13 +132,17 @@ export default function GameOverlay({
       </div>
 
       {/* Batter bar */}
-      {batter && (
+      {batter && (() => {
+        const battingTeamIsUs = isTopInning ? away.isUs : home.isUs;
+        const abBg = battingTeamIsUs ? "var(--night-game)" : "var(--night-game)";
+        const abColor = battingTeamIsUs ? "var(--clay)" : "var(--chalk)";
+        return (
         <div style={{ display: "flex", alignItems: "stretch", marginTop: "0.1em" }}>
           <div
             style={{
               width: CELL,
               padding: "0.35em 0",
-              background: "var(--dirt)",
+              background: abBg,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -148,7 +152,7 @@ export default function GameOverlay({
               style={{
                 fontSize: "0.7em",
                 fontWeight: 600,
-                color: "var(--chalk)",
+                color: abColor,
                 letterSpacing: "0.04em",
               }}
             >
@@ -177,7 +181,8 @@ export default function GameOverlay({
             </span>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
