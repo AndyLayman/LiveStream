@@ -15,6 +15,7 @@ interface GameState {
   opponent_runner_third: string | null;
   current_batter_index: number;
   opponent_batter_index: number;
+  current_pitcher_id: number | null;
 }
 
 interface Game {
@@ -51,6 +52,7 @@ export interface GameData {
   game: Game | null;
   gameState: GameState | null;
   currentBatter: Player | null;
+  currentPitcher: Player | null;
   balls: number;
   strikes: number;
   loading: boolean;
@@ -184,5 +186,23 @@ export function useGameData(gameId: string | null): GameData {
       ? lineup[gameState.current_batter_index % lineup.length]?.players ?? null
       : null;
 
-  return { game, gameState, currentBatter, balls, strikes, loading };
+  // Resolve current pitcher
+  const [currentPitcher, setCurrentPitcher] = useState<Player | null>(null);
+  useEffect(() => {
+    if (!gameState?.current_pitcher_id) {
+      setCurrentPitcher(null);
+      return;
+    }
+    async function fetchPitcher() {
+      const { data } = await supabase
+        .from("players")
+        .select("id, first_name, last_name, number")
+        .eq("id", gameState!.current_pitcher_id!)
+        .single();
+      if (data) setCurrentPitcher(data);
+    }
+    fetchPitcher();
+  }, [gameState?.current_pitcher_id]);
+
+  return { game, gameState, currentBatter, currentPitcher, balls, strikes, loading };
 }

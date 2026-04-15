@@ -108,7 +108,7 @@ export default function Home() {
     }
   }, [nextGameTime, streamStatus, checkLiveStatus]);
 
-  const { game, gameState, currentBatter, balls, strikes, loading } = useGameData(gameId);
+  const { game, gameState, currentBatter, currentPitcher, balls, strikes, loading } = useGameData(gameId);
   const { floatingReactions, isCelebrating, sendReaction } = useReactions(gameId);
 
   const handleLoadVideo = () => {
@@ -227,7 +227,7 @@ export default function Home() {
                     }
                   : null
               }
-              pitcher={null}
+              pitcher={currentPitcher ? { number: currentPitcher.number } : null}
             />
           </div>
 

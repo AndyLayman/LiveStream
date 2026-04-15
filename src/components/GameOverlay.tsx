@@ -63,7 +63,7 @@ export default function GameOverlay({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `${CELL} 0.15em ${CELL} 0.15em 5em 0.15em 5.5em`,
+          gridTemplateColumns: `${CELL} 0.15em ${CELL} 0.15em 5em 0.15em 7em`,
           gridTemplateRows: `${CELL} 0.15em ${CELL}`,
         }}
       >
@@ -114,8 +114,8 @@ export default function GameOverlay({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            gap: "0.15em",
-            position: "relative",
+            gap: "0.1em",
+            padding: "0.3em",
           }}
         >
           <BaseDiamond bases={bases} activeColor={battingColors.bg} activeBorder={battingColors.fg} />
@@ -125,18 +125,18 @@ export default function GameOverlay({
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "0.15em",
+              gap: "0.2em",
             }}
           >
             <NavArrowUpSolid
-              width="0.7em"
-              height="0.7em"
+              width="0.9em"
+              height="0.9em"
               color={isTopInning ? "var(--night-game)" : "var(--chalk)"}
               style={isTopInning ? undefined : { stroke: "var(--night-game)", strokeWidth: 1 }}
             />
             <span
               style={{
-                fontSize: "1.1em",
+                fontSize: "1.3em",
                 fontWeight: 700,
                 color: "var(--night-game)",
                 lineHeight: 1,
@@ -145,8 +145,8 @@ export default function GameOverlay({
               {inning}
             </span>
             <NavArrowDownSolid
-              width="0.7em"
-              height="0.7em"
+              width="0.9em"
+              height="0.9em"
               color={!isTopInning ? "var(--night-game)" : "var(--chalk)"}
               style={!isTopInning ? undefined : { stroke: "var(--night-game)", strokeWidth: 1 }}
             />
@@ -322,8 +322,8 @@ function BaseDiamond({
   activeBorder: string;
   bases: { first: boolean; second: boolean; third: boolean };
 }) {
-  const S = 0.9; // base size in em
-  const SPREAD = 2.8; // total width/height of diamond layout
+  const S = 1.1; // base size in em
+  const SPREAD = 3.6; // total width/height of diamond layout
   const HALF = S / 2;
   const LINE_W = 0.1; // baseline thickness
 
