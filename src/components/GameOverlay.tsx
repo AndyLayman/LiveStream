@@ -21,6 +21,7 @@ interface GameOverlayProps {
   outs: number;
   bases: { first: boolean; second: boolean; third: boolean };
   batter: { firstName: string; lastName: string; number?: string | number | null } | null;
+  pitcher: { number?: string | number | null } | null;
 }
 
 const CELL = "2.5em";
@@ -49,6 +50,7 @@ export default function GameOverlay({
   outs,
   bases,
   batter,
+  pitcher,
 }: GameOverlayProps) {
   const battingTeam = isTopInning ? away : home;
   const fieldingTeam = isTopInning ? home : away;
@@ -61,7 +63,7 @@ export default function GameOverlay({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `${CELL} 0.15em ${CELL} 0.15em 5em 0.15em 5em`,
+          gridTemplateColumns: `${CELL} 0.15em ${CELL} 0.15em 5em 0.15em 5.5em`,
           gridTemplateRows: `${CELL} 0.15em ${CELL}`,
         }}
       >
@@ -89,6 +91,14 @@ export default function GameOverlay({
             paddingRight: "0.3em",
           }}
         >
+          {pitcher && (
+            <div style={{ display: "flex", alignItems: "center", gap: "0.2em", marginBottom: "0.15em" }}>
+              <span style={{ fontSize: "0.75em", fontWeight: 700, color: "var(--night-game)" }}>P</span>
+              {pitcher.number != null && (
+                <span style={{ fontSize: "0.75em", fontWeight: 400, color: "var(--night-game)" }}>{pitcher.number}</span>
+              )}
+            </div>
+          )}
           <CountRow label="O" filled={outs} total={2} color="var(--night-game)" />
           <CountRow label="S" filled={strikes} total={2} color="var(--stitch-red)" />
           <CountRow label="B" filled={balls} total={3} color="var(--outfield)" />
@@ -109,12 +119,13 @@ export default function GameOverlay({
           }}
         >
           <BaseDiamond bases={bases} activeColor={battingColors.bg} activeBorder={battingColors.fg} />
-          {/* Inning */}
+          {/* Inning — vertical: arrow, number, arrow */}
           <div
             style={{
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
-              gap: "0.3em",
+              gap: "0.15em",
             }}
           >
             <NavArrowUpSolid
@@ -125,7 +136,7 @@ export default function GameOverlay({
             />
             <span
               style={{
-                fontSize: "1em",
+                fontSize: "1.1em",
                 fontWeight: 700,
                 color: "var(--night-game)",
                 lineHeight: 1,
@@ -311,18 +322,19 @@ function BaseDiamond({
   activeBorder: string;
   bases: { first: boolean; second: boolean; third: boolean };
 }) {
-  const S = 1.1; // base size in em
-  const GAP = 0.15; // gap between bases in em
+  const S = 0.9; // base size in em
+  const SPREAD = 2.8; // total width/height of diamond layout
   const HALF = S / 2;
-  const CENTER = S + GAP / 2; // center point
-  const LINE_W = 0.12; // baseline thickness
+  const LINE_W = 0.1; // baseline thickness
+
+  const MID = SPREAD / 2; // center of the layout
 
   return (
     <div
       style={{
         position: "relative",
-        width: `${S * 2 + GAP}em`,
-        height: `${S * 2 + GAP}em`,
+        width: `${SPREAD}em`,
+        height: `${SPREAD}em`,
       }}
     >
       {/* Baselines — diagonal lines connecting bases */}
@@ -332,7 +344,7 @@ function BaseDiamond({
           position: "absolute",
           top: `${HALF}em`,
           left: `${HALF}em`,
-          width: `${Math.sqrt(2) * (S + GAP)}em`,
+          width: `${Math.sqrt(2) * (MID - HALF)}em`,
           height: `${LINE_W}em`,
           background: "var(--night-game)",
           transformOrigin: "0 50%",
@@ -345,7 +357,7 @@ function BaseDiamond({
           position: "absolute",
           top: `${HALF}em`,
           right: `${HALF}em`,
-          width: `${Math.sqrt(2) * (S + GAP)}em`,
+          width: `${Math.sqrt(2) * (MID - HALF)}em`,
           height: `${LINE_W}em`,
           background: "var(--night-game)",
           transformOrigin: "100% 50%",
