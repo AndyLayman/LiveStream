@@ -1,4 +1,4 @@
-import { supabase } from "./supabase"
+import { supabase } from "./supabase/client"
 
 export type LeagueConfig = {
   maxInnings: number
@@ -28,11 +28,11 @@ const defaults: LeagueConfig = {
   extraHitterAllowed: false,
 }
 
-export async function getLeagueConfig(): Promise<LeagueConfig> {
+export async function getLeagueConfig(teamId: string): Promise<LeagueConfig> {
   const { data, error } = await supabase
     .from("league_config")
     .select("*")
-    .eq("id", 1)
+    .eq("team_id", teamId)
     .single()
 
   if (error || !data) return defaults

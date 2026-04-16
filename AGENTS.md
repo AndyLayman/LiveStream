@@ -282,6 +282,41 @@ Organize buckets by concern: `walk-up-songs`, `team-assets`, etc.
   migration with `npx supabase gen types typescript --project-id xrtetfxvyicdqfpwnpzt >     
   types/database.ts`.
 
+### Multi-team migration (April 2026) [SHARED]
+
+All data is now scoped by `team_id`. Key changes:
+
+**Database:**
+- `team_id UUID NOT NULL REFERENCES teams(id)` added to: `players`, `games`, `practices`, `drills`, `chain_awards`, `action_items`, `venues`, `sounds`, `practice_plan_templates`
+- `team_settings` and `league_config` no longer use single-row `CHECK(id=1)` — primary key is now `team_id`
+- `batting_stats_season` and `fielding_stats_season` views now include `team_id` in SELECT and GROUP BY
+- Child tables (`game_lineup`, `plate_appearances`, `fielding_plays`, `game_state`, `opponent_lineup`, `pitches`, `practice_attendance`, `practice_notes`, `practice_plan_items`) do NOT have `team_id` — they're scoped through their parent FK
+
+**Query pattern (all apps must follow):**
+
+```typescript
+const { activeTeam } = useAuth();
+
+// Reads — filter by team_id
+supabase.from("players").select("*").eq("team_id", activeTeam.team_id)
+supabase.from("games").select("*").eq("team_id", activeTeam.team_id)
+supabase.from("batting_stats_season").select("*").eq("team_id", activeTeam.team_id)
+
+// Inserts — include team_id
+supabase.from("games").insert({ ...gameData, team_id: activeTeam.team_id })
+
+// league_config / team_settings — use team_id, not id=1
+supabase.from("league_config").select("*").eq("team_id", activeTeam.team_id).single()
+supabase.from("team_settings").select("*").eq("team_id", activeTeam.team_id).single()
+```
+
+**Auth provider exports:**
+- `activeTeam` — current team membership (includes `team_id`, `team_name`, `team_slug`, `role`)
+- `setActiveTeam(team)` — switch teams, persisted to localStorage
+- `memberships` — all teams the user belongs to
+
+**Migration file:** `supabase/migrations/014_multi_team.sql`
+
 ---
 
 ## Coding Conventions [SHARED]

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { supabase } from "./supabase";
+import { supabase } from "./supabase/client";
 
 export type ReactionType = "celebrate" | "fire" | "sad" | "laugh";
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/auth-provider";
 import { useGameData } from "@/lib/useGameData";
 import { useReactions } from "@/lib/useReactions";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
@@ -10,6 +11,8 @@ import ReactionsOverlay from "@/components/ReactionsOverlay";
 import ReactionButtons from "@/components/ReactionButtons";
 
 export default function Home() {
+  const { user, activeTeam } = useAuth();
+  const isAdmin = !!user;
   const [videoId, setVideoId] = useState("");
   const [videoInput, setVideoInput] = useState("");
   const [showUrlBar, setShowUrlBar] = useState(false);
@@ -34,39 +37,41 @@ export default function Home() {
     }
   }, []);
 
-  // Find the active or next upcoming game
+  // Find the active or next upcoming game (scoped by team if logged in)
   useEffect(() => {
     async function findGame() {
-      // First check for an in-progress game
-      const { data: activeGame } = await supabase
+      // Build base query with optional team scoping
+      let activeQuery = supabase
         .from("games")
         .select("id")
         .eq("status", "in_progress")
         .order("date", { ascending: false })
-        .limit(1)
-        .single();
+        .limit(1);
+      if (activeTeam) activeQuery = activeQuery.eq("team_id", activeTeam.team_id);
+
+      const { data: activeGame } = await activeQuery.single();
 
       if (activeGame) {
         setGameId(activeGame.id);
-        // Game is active — start polling YouTube immediately
         checkLiveStatus();
         return;
       }
 
       // Find the next scheduled game
       const today = new Date().toISOString().split("T")[0];
-      const { data: nextGame } = await supabase
+      let nextQuery = supabase
         .from("games")
         .select("id, date, game_time")
         .eq("status", "scheduled")
         .gte("date", today)
         .order("date", { ascending: true })
-        .limit(1)
-        .single();
+        .limit(1);
+      if (activeTeam) nextQuery = nextQuery.eq("team_id", activeTeam.team_id);
+
+      const { data: nextGame } = await nextQuery.single();
 
       if (nextGame) {
         setGameId(nextGame.id);
-        // Parse game start time
         const [hours, minutes] = (nextGame.game_time || "12:00").split(":").map(Number);
         const gameStart = new Date(nextGame.date + "T00:00:00");
         gameStart.setHours(hours, minutes, 0, 0);
@@ -76,7 +81,7 @@ export default function Home() {
       }
     }
     findGame();
-  }, [checkLiveStatus]);
+  }, [checkLiveStatus, activeTeam]);
 
   // Poll YouTube only when within 15 minutes of game time, or game is in progress
   useEffect(() => {
@@ -242,6 +247,32 @@ export default function Home() {
         >
           <ReactionButtons onReact={sendReaction} />
         </div>
+
+        {/* Admin link */}
+        <a
+          href={isAdmin ? "/admin" : "/login"}
+          className="absolute z-50"
+          style={{
+            top: "0.8em",
+            right: "0.8em",
+            fontSize: "1.2cqw",
+            color: "var(--text-dim)",
+            textDecoration: "none",
+            opacity: 0.5,
+            transition: "opacity var(--duration-fast)",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
+        >
+          {isAdmin ? (
+            <svg style={{ width: "1.5em", height: "1.5em" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          ) : (
+            <span style={{ fontSize: "0.7em", fontWeight: 400 }}>Admin</span>
+          )}
+        </a>
 
         {/* URL toggle button */}
         <button
