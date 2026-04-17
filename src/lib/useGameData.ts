@@ -48,11 +48,17 @@ interface Pitch {
   pitch_type: "ball" | "strike" | "foul";
 }
 
+export interface BatterGameStats {
+  hits: number;
+  atBats: number;
+}
+
 export interface GameData {
   game: Game | null;
   gameState: GameState | null;
   currentBatter: Player | null;
   currentPitcher: Player | null;
+  batterStats: BatterGameStats | null;
   balls: number;
   strikes: number;
   loading: boolean;
@@ -64,6 +70,7 @@ export function useGameData(gameId: string | null): GameData {
   const [lineup, setLineup] = useState<LineupEntry[]>([]);
   const [balls, setBalls] = useState(0);
   const [strikes, setStrikes] = useState(0);
+  const [batterStats, setBatterStats] = useState<BatterGameStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch initial data
@@ -204,5 +211,26 @@ export function useGameData(gameId: string | null): GameData {
     fetchPitcher();
   }, [gameState?.current_pitcher_id]);
 
-  return { game, gameState, currentBatter, currentPitcher, balls, strikes, loading };
+  // Fetch batter's game stats (hits for at-bats)
+  useEffect(() => {
+    if (!gameId || !currentBatter) {
+      setBatterStats(null);
+      return;
+    }
+    async function fetchBatterStats() {
+      const { data } = await supabase
+        .from("plate_appearances")
+        .select("is_at_bat, is_hit")
+        .eq("game_id", gameId!)
+        .eq("player_id", currentBatter!.id);
+      if (data) {
+        const atBats = data.filter((pa) => pa.is_at_bat).length;
+        const hits = data.filter((pa) => pa.is_hit).length;
+        setBatterStats({ hits, atBats });
+      }
+    }
+    fetchBatterStats();
+  }, [gameId, currentBatter?.id]);
+
+  return { game, gameState, currentBatter, currentPitcher, batterStats, balls, strikes, loading };
 }

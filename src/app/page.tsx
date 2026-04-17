@@ -113,8 +113,8 @@ export default function Home() {
     }
   }, [nextGameTime, streamStatus, checkLiveStatus]);
 
-  const { game, gameState, currentBatter, currentPitcher, balls, strikes, loading } = useGameData(gameId);
-  const { floatingReactions, isCelebrating, sendReaction } = useReactions(gameId);
+  const { game, gameState, currentBatter, currentPitcher, batterStats, balls, strikes, loading } = useGameData(gameId);
+  const { floatingReactions, isCelebrating, celebrationEmoji, sendReaction } = useReactions(gameId);
 
   const handleLoadVideo = () => {
     const match = videoInput.match(
@@ -232,12 +232,13 @@ export default function Home() {
                     }
                   : null
               }
+              batterStats={batterStats}
               pitcher={currentPitcher ? { number: currentPitcher.number } : null}
             />
           </div>
 
           {/* Floating reactions */}
-          <ReactionsOverlay reactions={floatingReactions} isCelebrating={isCelebrating} />
+          <ReactionsOverlay reactions={floatingReactions} isCelebrating={isCelebrating} celebrationEmoji={celebrationEmoji} />
         </div>
 
         {/* Bottom-right: Reaction buttons */}

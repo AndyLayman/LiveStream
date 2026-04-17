@@ -26,7 +26,9 @@ const REACTION_LIFETIME_MS = 3000;
 export function useReactions(gameId: string | null) {
   const [floatingReactions, setFloatingReactions] = useState<FloatingReaction[]>([]);
   const [isCelebrating, setIsCelebrating] = useState(false);
+  const [celebrationEmoji, setCelebrationEmoji] = useState<ReactionType>("celebrate");
   const recentTimestamps = useRef<number[]>([]);
+  const recentTypes = useRef<ReactionType[]>([]);
 
   // Clean up expired reactions
   useEffect(() => {
@@ -52,12 +54,23 @@ export function useReactions(gameId: string | null) {
     // Track for celebration threshold
     const now = Date.now();
     recentTimestamps.current.push(now);
+    recentTypes.current.push(type);
     recentTimestamps.current = recentTimestamps.current.filter(
-      (t) => now - t < CELEBRATION_WINDOW_MS
+      (t, i) => {
+        if (now - t < CELEBRATION_WINDOW_MS) return true;
+        recentTypes.current.splice(i, 1);
+        return false;
+      }
     );
     if (recentTimestamps.current.length >= CELEBRATION_THRESHOLD) {
+      // Find the most popular reaction type
+      const counts: Record<string, number> = {};
+      recentTypes.current.forEach((t) => { counts[t] = (counts[t] || 0) + 1; });
+      const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0] as ReactionType;
+      setCelebrationEmoji(top);
       setIsCelebrating(true);
       recentTimestamps.current = [];
+      recentTypes.current = [];
       setTimeout(() => setIsCelebrating(false), 4000);
     }
   }, []);
@@ -83,14 +96,15 @@ export function useReactions(gameId: string | null) {
     };
   }, [gameId, addFloating]);
 
-  // Send a reaction
+  // Send a reaction — optimistically show it locally
   const sendReaction = useCallback(
     async (type: ReactionType) => {
+      addFloating(type);
       if (!gameId) return;
       await supabase.from("stream_reactions").insert({ game_id: gameId, reaction_type: type });
     },
-    [gameId]
+    [gameId, addFloating]
   );
 
-  return { floatingReactions, isCelebrating, sendReaction, reactionEmojis: REACTION_EMOJIS };
+  return { floatingReactions, isCelebrating, celebrationEmoji, sendReaction, reactionEmojis: REACTION_EMOJIS };
 }
